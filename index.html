@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diario de Estudio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+    <h1>📚 Diario de Estudio</h1>
+
+    <section class="hero">
+      <span class="hero-numero" id="rachaNumero">0</span>
+      <span class="hero-texto">🔥 días de racha</span>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <span class="stat-valor" id="mejorRachaNumero">0</span>
+        <span class="stat-label">⭐ Mejor racha</span>
+      </div>
+      <div class="stat">
+        <span class="stat-valor" id="totalMinutos">0 min</span>
+        <span class="stat-label">⏱️ Total</span>
+      </div>
+      <div class="stat">
+        <span class="stat-valor" id="diasMesNumero">0</span>
+        <span class="stat-label">📅 Este mes</span>
+      </div>
+    </section>
+
+    <section class="heatmap">
+      <h2>🗺️ Mapa de calor</h2>
+      <p class="heatmap-range" id="heatmapRange"></p>
+      <div class="heatmap-grid" id="heatmapGrid" role="img" aria-label="Mapa de calor de estudio de las últimas 12 semanas"></div>
+      <div class="heatmap-legend">
+        <span class="legend-item"><span class="legend-color empty"></span>0 min</span>
+        <span class="legend-item"><span class="legend-color level-1"></span>1-30</span>
+        <span class="legend-item"><span class="legend-color level-2"></span>31-60</span>
+        <span class="legend-item"><span class="legend-color level-3"></span>61-120</span>
+        <span class="legend-item"><span class="legend-color level-4"></span>121+</span>
+      </div>
+    </section>
+
+    <section class="formulario">
+      <h2>✏️ Registrar sesión</h2>
+      <form id="formulario">
+        <label for="fecha">📅 Fecha</label>
+        <input type="date" id="fecha" required>
+
+        <label for="tema">📖 Tema</label>
+        <input type="text" id="tema" placeholder="¿Qué estudiaste?" required>
+
+        <label for="minutos">⏱️ Minutos</label>
+        <input type="number" id="minutos" min="1" placeholder="Ej: 45" required>
+
+        <button type="submit">💾 Guardar sesión</button>
+      </form>
+    </section>
+
+    <section class="sesiones">
+      <h2>📋 Sesiones</h2>
+      <ul id="listaSesiones"></ul>
+    </section>
+  </main>
+
+  <div id="toast" class="toast">✅ Sesión guardada</div>
+
+  <script src="heat-map.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
