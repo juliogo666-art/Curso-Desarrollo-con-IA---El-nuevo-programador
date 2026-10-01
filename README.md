@@ -1,4 +1,4 @@
-### Curso de Desarrollo con IA: el Nuevo Programador 
+# Curso de Desarrollo con IA: el Nuevo Programador 
 
 Curso  de 29,30 de septiembre y 1 de octubre 
 
@@ -6,7 +6,7 @@ Impartido por Brais Moure
 
 ## ¿ Que se enseña ?
 
-# 29 de septiembre 
+### 29 de septiembre 
 
 - Por qué la mayoría de los errores de la IA no empiezan en el código, sino en una petición ambigua o un contexto incompleto (y cómo solucionarlo). 
 
@@ -14,7 +14,7 @@ Impartido por Brais Moure
 
 - Por qué el mundo del desarrollo está cambiando y cómo liderar la nueva realidad dirigiendo a la Inteligencia Artificial con criterio.
 
-# 30 de septiembre
+### 30 de septiembre
 
 - Cómo darle a la IA acceso al contexto de tu proyecto para que entienda tus archivos y no trabaje "a ciegas".
 
@@ -22,7 +22,7 @@ Impartido por Brais Moure
 
 - Cómo utilizar archivos de contexto y buenas instrucciones para que la IA actúe con autonomía útil, mantenga la consistencia y no tengas que empezar de cero en cada prompt.
 
-# 1 de Octubre
+### 1 de Octubre
 
 - Diseñar una Arquitectura Multiagente para que cada uno te ayude en una fase concreta de tu proyecto.
 
