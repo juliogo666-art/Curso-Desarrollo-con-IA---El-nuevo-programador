@@ -25,7 +25,7 @@ El Diario de Estudio registra sesiones con fecha, tema y minutos. Actualmente mu
 - WHEN la página carga, THE SYSTEM SHALL mostrar un mapa de calor con exactamente 84 celdas (12 semanas × 7 días) en formato de grid.
 - WHERE el mapa se muestra, THE SYSTEM SHALL organizar los días en columnas por semana y filas por día de la semana (lunes a domingo).
 - IF el día actual no es lunes, THEN THE SYSTEM SHALL mostrar las celdas de días anteriores a la primera semana en gris claro (fuera de rango).
-- IF el día actual no es domingo, THEN THE SYSTEM SHALL mostrar las celdas de días posteriores al día actual en gris claro (fuera de rango).
+- IF el día actual no es domingo, THEN THE SYSTEM SHALL mostrar las celdas de días posteriores al día actual **sin sesión** en gris claro (fuera de rango). Si hay sesión futura, manda RF-3.
 
 ### RF-2: Cálculo de intensidad por día
 **Criterios de aceptación (EARS):**
@@ -111,17 +111,17 @@ El Diario de Estudio registra sesiones con fecha, tema y minutos. Actualmente mu
 
 ## Criterios de finalización
 
-- [ ] El mapa muestra 84 celdas (12 semanas) en grid correcto (lunes a domingo).
-- [ ] Las celdas fuera de rango (anteriores a la primera semana o posteriores al día actual) se muestran en gris claro.
-- [ ] La escala de colores fija funciona según RF-2 con límites inclusivos.
-- [ ] Se actualiza dinámicamente al guardar sesión.
-- [ ] Responsive en 320px sin scroll horizontal.
-- [ ] Texto alternativo accesible en cada celda.
-- [ ] Leyenda visible debajo del grid con los 5 niveles.
-- [ ] Indicador temporal visible encima del grid.
-- [ ] Tests de lógica pasan con `node --test`.
+- [x] El mapa muestra 84 celdas (12 semanas) en grid correcto (lunes a domingo).
+- [x] Las celdas posteriores al día actual **sin sesión** se muestran en gris claro; si hay sesión futura, se colorean según RF-3.
+- [x] La escala de colores fija funciona según RF-2 con límites inclusivos.
+- [x] Se actualiza dinámicamente al guardar sesión.
+- [x] Responsive en 320px sin scroll horizontal.
+- [x] Texto alternativo accesible en cada celda.
+- [x] Leyenda visible debajo del grid con los 5 niveles.
+- [x] Indicador temporal visible encima del grid.
+- [x] Tests de lógica pasan con `node --test`.
 - [ ] Verificado con Chrome DevTools (consola sin errores, vista móvil correcta).
 
 ## Dudas abiertas
 
-- [NECESITA ACLARACIÓN] ¿El mapa se coloca encima o debajo de las estadísticas actuales? (decidir en el plan de implementación)
+- [RESUELTO] El mapa se coloca entre las estadísticas y el formulario (decisión del plan).

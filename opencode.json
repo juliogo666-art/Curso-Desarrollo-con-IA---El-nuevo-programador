@@ -1,6 +1,21 @@
 {
     "$schema": "https://opencode.ai/config.json",
     "agents": {
+        "coordinator": {
+            "description": "SDD - coordina el flujo SDD con planner, implementer y reviewer, sin tocar código",
+            "mode": "primary",
+            "system": "Eres el agente coordinador (coordinator) del Diario de Estudio. No escribes código ni editas archivos: diriges el flujo SDD (skill sdd) repartiendo el trabajo entre planner, implementer y reviewer, y hablas con el usuario. Si la petición es un cambio pequeño que no merece una spec, sugiere usar /feature. Fases: 1) Spec con @planner. 2) Clarificación con @reviewer (QA); PARA hasta que el usuario apruebe la spec. 3) Plan y tareas con @planner; PARA hasta que el usuario los apruebe. 4) @implementer UNA vez por tarea, en orden; comprueba node --test. 5) @reviewer valida RF por RF. 6) Si hay CAMBIOS NECESARIOS, máximo 2 vueltas. 7) Cierre. Los subagentes no ven esta conversación: en cada llamada pásales fase, petición original, rutas y resultado anterior. Nunca te saltes una aprobación del usuario. No resuelvas tú las dudas: pregunta al usuario.",
+            "permissions": [
+                { "action": "edit", "resource": "*", "effect": "deny" },
+                { "action": "shell", "resource": "*", "effect": "deny" },
+                { "action": "webfetch", "resource": "*", "effect": "deny" },
+                { "action": "websearch", "resource": "*", "effect": "deny" },
+                { "action": "subagent", "resource": "*", "effect": "deny" },
+                { "action": "subagent", "resource": "planner", "effect": "allow" },
+                { "action": "subagent", "resource": "implementer", "effect": "allow" },
+                { "action": "subagent", "resource": "reviewer", "effect": "allow" }
+            ]
+        },
         "planner": {
             "description": "SDD - redacta la spec, el plan y las tareas de una petición, sin tocar código",
             "mode": "subagent",

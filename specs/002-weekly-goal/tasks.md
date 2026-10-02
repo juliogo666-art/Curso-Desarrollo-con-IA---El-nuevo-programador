@@ -29,3 +29,9 @@
 
 - [x] **T10. Verificar con Chrome DevTools.** RF-1, RF-2, RF-3, RF-4, RF-5, RF-6, RF-7
   - Hecho cuando: La funcionalidad funciona correctamente, consola sin errores, vista móvil correcta.
+
+- [x] **T11. Añadir `normalizeGoal`, `parseGoalStored` e `isGoalAchieved`.** RF-1, RF-5, RF-6
+  - Hecho cuando: Las tres funciones están exportadas y `cargarObjetivo` / el guardado las usan.
+
+- [x] **T12. Tests de las funciones puras nuevas.** RF-1, RF-5, RF-6
+  - Hecho cuando: `node --test` cubre redondeo, localStorage inválido y objetivo cumplido.

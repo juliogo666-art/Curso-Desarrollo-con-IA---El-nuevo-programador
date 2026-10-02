@@ -1,42 +1,42 @@
-# Curso de Desarrollo con IA: el Nuevo Programador 
+# Diario de Estudio
 
-# Impartido por Brais Moure
+Web estática para registrar sesiones de estudio y ver la racha, el objetivo semanal y un mapa de calor de las últimas 12 semanas.
 
-## ¿ Que se enseño ?
+## Cómo usarla
 
-```
+Abre `index.html` con doble clic. No hace falta servidor, `npm` ni build.
 
-### 29 de septiembre de 2026
+Los datos se guardan en el navegador (`localStorage`):
 
-- Por qué la mayoría de los errores de la IA no empiezan en el código, sino en una petición ambigua o un contexto incompleto (y cómo solucionarlo). 
+- `diarioEstudio_sesiones`: array de `{ fecha: "AAAA-MM-DD", tema, minutos }`
+- `diario-estudio-objetivo-semanal`: minutos objetivo de la semana
 
-- Cómo transformar una idea en un plan de trabajo claro, estableciendo restricciones y evaluando la propuesta de la IA antes de generar una sola línea para conseguir mejores resultados. 
+Para empezar de cero, en DevTools → Application → Local Storage borra esas dos claves.
 
-- Por qué el mundo del desarrollo está cambiando y cómo liderar la nueva realidad dirigiendo a la Inteligencia Artificial con criterio.
+## Archivos
 
-* Enlace youtube: https://youtube.com/live/qHYi92zRn-s  
+| Archivo | Qué hace |
+|---|---|
+| `index.html` | Estructura de la página |
+| `styles.css` | Estilos |
+| `app.js` | Interfaz, localStorage, racha y lista de sesiones |
+| `heat-map.js` | Lógica pura del mapa de calor |
+| `weekly-goal.js` | Lógica pura del objetivo semanal |
+| `tests/` | Tests de Node (`app`, `heat-map`, `weekly-goal`) |
+| `docs/constitution.md` | Principios del proyecto |
+| `specs/` | Specs, planes y tareas (SDD) |
+| `README_curso.md` | Notas de las clases del curso |
 
-```
+## Tests
 
-### 30 de septiembre de 2026
-
-- Cómo darle a la IA acceso al contexto de tu proyecto para que entienda tus archivos y no trabaje "a ciegas".
-
-- Cómo dividir el trabajo en etapas, validar las propuestas de la IA y establecer puntos de control para auditar sus decisiones antes de aplicar cambios en tu código.
-
-- Cómo utilizar archivos de contexto y buenas instrucciones para que la IA actúe con autonomía útil, mantenga la consistencia y no tengas que empezar de cero en cada prompt.
-
-* Enlace youtube: https://youtube.com/live/hzQNE092cW0
-
-```
-### 1 de Octubre de 2026
-
-- Diseñar una Arquitectura Multiagente para que cada uno te ayude en una fase concreta de tu proyecto.
-
-- Descubrir cómo desgranar un reto técnico complejo en pasos más pequeños para que la IA trabaje con el contexto exacto que necesita, para darte mejores resultados desde el minuto uno.
-
-- Asumir el rol de Orquestador, donde el objetivo no es generar más código a lo loco, sino mantener tú la visión global, el criterio técnico y la decisión final sobre lo que se aprueba y se despliega.
-
-* Enlace youtube: https://youtube.com/live/R1UGk4rb9BM 
+Desde la raíz del proyecto:
 
 ```
+node --test
+```
+
+No instala paquetes. Las funciones de cálculo no usan el DOM.
+
+## Más contexto
+
+Reglas para agentes: `AGENTS.md`. Estado reciente: `MEMORY.md`.

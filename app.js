@@ -18,23 +18,39 @@ function obtenerFechaHoy() {
   return `${anio}-${mes}-${dia}`;
 }
 
-function calcularRacha(sesiones) {
-  if (sesiones.length === 0) return 0;
+function fechaLocalDesdeTexto(fechaStr) {
+  const [anio, mes, dia] = fechaStr.split('-').map(Number);
+  return new Date(anio, mes - 1, dia);
+}
 
-  const diasConSesion = new Set(sesiones.map(s => s.fecha));
+function esFechaConsecutiva(anterior, siguiente) {
+  const esperado = fechaLocalDesdeTexto(anterior);
+  esperado.setDate(esperado.getDate() + 1);
+  const anio = esperado.getFullYear();
+  const mes = String(esperado.getMonth() + 1).padStart(2, '0');
+  const dia = String(esperado.getDate()).padStart(2, '0');
+  return `${anio}-${mes}-${dia}` === siguiente;
+}
+
+function calcularRacha(sesiones, hoy) {
+  const hoyStr = hoy || obtenerFechaHoy();
+  const diasConSesion = new Set(
+    sesiones.filter(s => s.fecha && s.fecha <= hoyStr).map(s => s.fecha)
+  );
+
+  let cursor = fechaLocalDesdeTexto(hoyStr);
+  if (!diasConSesion.has(hoyStr)) {
+    cursor.setDate(cursor.getDate() - 1);
+    const ayer = obtenerFechaHoyDesdeDate(cursor);
+    if (!diasConSesion.has(ayer)) return 0;
+  }
 
   let racha = 0;
-  let fecha = new Date();
-
   while (true) {
-    const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-    const dia = String(fecha.getDate()).padStart(2, '0');
-    const fechaStr = `${anio}-${mes}-${dia}`;
-
+    const fechaStr = obtenerFechaHoyDesdeDate(cursor);
     if (diasConSesion.has(fechaStr)) {
       racha++;
-      fecha.setDate(fecha.getDate() - 1);
+      cursor.setDate(cursor.getDate() - 1);
     } else {
       break;
     }
@@ -43,19 +59,26 @@ function calcularRacha(sesiones) {
   return racha;
 }
 
-function calcularMejorRacha(sesiones) {
-  if (sesiones.length === 0) return 0;
+function obtenerFechaHoyDesdeDate(fecha) {
+  const anio = fecha.getFullYear();
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  return `${anio}-${mes}-${dia}`;
+}
 
-  const dias = [...new Set(sesiones.map(s => s.fecha))].sort();
+function calcularMejorRacha(sesiones, hoy) {
+  const hoyStr = hoy || obtenerFechaHoy();
+  const dias = [...new Set(
+    sesiones.filter(s => s.fecha && s.fecha <= hoyStr).map(s => s.fecha)
+  )].sort();
+
+  if (dias.length === 0) return 0;
+
   let mejor = 1;
   let actual = 1;
 
   for (let i = 1; i < dias.length; i++) {
-    const prev = new Date(dias[i - 1]);
-    const curr = new Date(dias[i]);
-    const diff = (curr - prev) / (1000 * 60 * 60 * 24);
-
-    if (diff === 1) {
+    if (esFechaConsecutiva(dias[i - 1], dias[i])) {
       actual++;
       mejor = Math.max(mejor, actual);
     } else {
@@ -81,20 +104,20 @@ function calcularTotalMinutos(sesiones) {
 }
 
 function formatearMinutos(minutos) {
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
+  const total = Math.round(minutos);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
   if (h === 0) return `${m} min`;
   return `${h} h ${m} min`;
 }
 
-function calcularDiasEsteMes(sesiones) {
-  const ahora = new Date();
-  const mesActual = String(ahora.getMonth() + 1).padStart(2, '0');
-  const anioActual = ahora.getFullYear();
+function calcularDiasEsteMes(sesiones, hoy) {
+  const hoyStr = hoy || obtenerFechaHoy();
+  const prefijo = hoyStr.slice(0, 7);
 
   const diasUnicos = new Set(
     sesiones
-      .filter(s => s.fecha.startsWith(`${anioActual}-${mesActual}`))
+      .filter(s => s.fecha && s.fecha.startsWith(prefijo))
       .map(s => s.fecha)
   );
 
@@ -103,13 +126,14 @@ function calcularDiasEsteMes(sesiones) {
 
 function mostrarRacha() {
   const sesiones = cargarSesiones();
-  const racha = calcularRacha(sesiones);
+  const hoy = obtenerFechaHoy();
+  const racha = calcularRacha(sesiones, hoy);
   document.getElementById('rachaNumero').textContent = racha;
-  const mejor = calcularMejorRacha(sesiones);
+  const mejor = calcularMejorRacha(sesiones, hoy);
   document.getElementById('mejorRachaNumero').textContent = mejor;
   const total = calcularTotalMinutos(sesiones);
   document.getElementById('totalMinutos').textContent = formatearMinutos(total);
-  const diasMes = calcularDiasEsteMes(sesiones);
+  const diasMes = calcularDiasEsteMes(sesiones, hoy);
   document.getElementById('diasMesNumero').textContent = diasMes;
 }
 
@@ -136,21 +160,18 @@ function mostrarSesiones() {
 }
 
 function mostrarHeatMap() {
-  const sesiones = cargarSesiones();
+  const sesiones = cargarSesiones().map(s => ({ date: s.fecha, minutes: s.minutos }));
   const grid = document.getElementById('heatmapGrid');
   const rangeEl = document.getElementById('heatmapRange');
   const today = new Date();
-  const days = buildHeatMap(sesiones, today);
-  const { start, end } = getWeeksRange(today, 12);
+  const cells = buildHeatMap(sesiones, today);
+  const { start, end } = getHeatMapRange(today, 12);
 
   rangeEl.textContent = formatDateRange(start, end);
 
-  grid.innerHTML = days.map(d => {
-    const [anio, mes, dia] = d.date.split('-').map(Number);
-    const fecha = new Date(anio, mes - 1, dia);
-    const fechaLegible = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
-    const label = d.minutes > 0 ? `${fechaLegible}: ${d.minutos} min` : `${fechaLegible}: sin estudio`;
-    return `<div class="heatmap-cell ${d.color}" role="img" aria-label="${label}" title="${label}"></div>`;
+  grid.innerHTML = cells.map(cell => {
+    const label = formatDayLabel(cell.date, cell.minutes);
+    return `<div class="heatmap-cell ${cell.level}" aria-label="${label}"></div>`;
   }).join('');
 }
 
@@ -162,10 +183,7 @@ function mostrarToast(mensaje) {
 }
 
 function cargarObjetivo() {
-  const datos = localStorage.getItem(CLAVE_OBJETIVO);
-  if (!datos) return 0;
-  const objetivo = parseInt(datos, 10);
-  return isNaN(objetivo) ? 0 : objetivo;
+  return parseGoalStored(localStorage.getItem(CLAVE_OBJETIVO));
 }
 
 function guardarObjetivo(minutos) {
@@ -189,7 +207,7 @@ function mostrarProgreso() {
   barra.style.backgroundColor = color;
   texto.textContent = `${minutosSemana} / ${objetivo} min`;
 
-  if (objetivo > 0 && porcentaje >= 100) {
+  if (isGoalAchieved(minutosSemana, objetivo)) {
     mensaje.textContent = '¡Objetivo cumplido! 🎉';
   } else {
     mensaje.textContent = '';
@@ -206,22 +224,15 @@ function init() {
 
   document.getElementById('save-goal-btn').addEventListener('click', () => {
     const input = document.getElementById('goal-input');
-    const valor = parseInt(input.value, 10);
+    const resultado = normalizeGoal(input.value);
 
-    if (!valor || isNaN(valor)) {
-      mostrarToast('⚠️ Introduce un número válido');
-      return;
-    }
-
-    const redondeado = Math.round(valor);
-
-    if (!isValidGoal(redondeado)) {
+    if (!resultado.ok) {
       mostrarToast('⚠️ El objetivo debe ser entre 1 y 10.000 minutos');
       return;
     }
 
-    guardarObjetivo(redondeado);
-    input.value = redondeado;
+    guardarObjetivo(resultado.value);
+    input.value = resultado.value;
     mostrarProgreso();
     mostrarToast('✅ Objetivo guardado');
   });
@@ -255,4 +266,16 @@ function init() {
   mostrarProgreso();
 }
 
-init();
+if (typeof document !== 'undefined') {
+  init();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    calcularRacha,
+    calcularMejorRacha,
+    calcularTotalMinutos,
+    calcularDiasEsteMes,
+    formatearMinutos
+  };
+}

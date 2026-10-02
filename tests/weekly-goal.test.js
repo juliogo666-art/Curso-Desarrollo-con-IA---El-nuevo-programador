@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { getWeekRange, getMinutesInWeek, getProgressPercentage, getProgressColor, isValidGoal } = require('./weekly-goal.js');
+const { getWeekRange, getMinutesInWeek, getProgressPercentage, getProgressColor, isValidGoal, normalizeGoal, parseGoalStored, isGoalAchieved } = require('../weekly-goal.js');
 
 test('getWeekRange devuelve lunes y domingo correctos', () => {
   const hoy = new Date(2026, 9, 2);
@@ -43,6 +43,17 @@ test('getMinutesInWeek suma solo sesiones de la semana actual', () => {
 
   const total = getMinutesInWeek(sesiones, hoy);
   assert.strictEqual(total, 260);
+});
+
+test('getMinutesInWeek contabiliza sesiones aunque hoy tenga horas y minutos (ej. new Date())', () => {
+  const hoyConHora = new Date(2026, 9, 2, 16, 30, 45); // Viernes a las 16:30
+  const sesiones = [
+    { fecha: '2026-09-28', minutos: 30 }, // Lunes
+    { fecha: '2026-10-04', minutos: 60 }  // Domingo
+  ];
+
+  const total = getMinutesInWeek(sesiones, hoyConHora);
+  assert.strictEqual(total, 90);
 });
 
 test('getMinutesInWeek ignora sesiones con minutos negativos', () => {
@@ -96,6 +107,31 @@ test('isValidGoal valida correctamente', () => {
   assert.strictEqual(isValidGoal(0), false);
   assert.strictEqual(isValidGoal(-10), false);
   assert.strictEqual(isValidGoal(10001), false);
+  assert.strictEqual(isValidGoal(300.5), false);
   assert.strictEqual(isValidGoal('300'), false);
   assert.strictEqual(isValidGoal(null), false);
+});
+
+test('normalizeGoal redondea y rechaza valores fuera de rango', () => {
+  assert.deepStrictEqual(normalizeGoal(300), { ok: true, value: 300 });
+  assert.deepStrictEqual(normalizeGoal('300.5'), { ok: true, value: 301 });
+  assert.deepStrictEqual(normalizeGoal('10000.4'), { ok: true, value: 10000 });
+  assert.strictEqual(normalizeGoal('10000.5').ok, false);
+  assert.strictEqual(normalizeGoal('').ok, false);
+  assert.strictEqual(normalizeGoal('abc').ok, false);
+  assert.strictEqual(normalizeGoal(0).ok, false);
+});
+
+test('parseGoalStored ignora formatos inválidos', () => {
+  assert.strictEqual(parseGoalStored('300'), 300);
+  assert.strictEqual(parseGoalStored(null), 0);
+  assert.strictEqual(parseGoalStored('no-es-numero'), 0);
+  assert.strictEqual(parseGoalStored('-5'), 0);
+});
+
+test('isGoalAchieved indica si se cumple el objetivo', () => {
+  assert.strictEqual(isGoalAchieved(300, 300), true);
+  assert.strictEqual(isGoalAchieved(450, 300), true);
+  assert.strictEqual(isGoalAchieved(299, 300), false);
+  assert.strictEqual(isGoalAchieved(100, 0), false);
 });

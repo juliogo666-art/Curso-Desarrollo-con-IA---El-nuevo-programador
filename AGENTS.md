@@ -6,8 +6,10 @@ programar.
 
 ## Stack y estructura 
 - HTML, CSS y JavaScript puros: sin frameworks, librerías, npm, bundler ni build. 
-- `index.html` (estructura), `styles.css` (estilos), `app.js` (lógica y datos). 
-- Debe funcionar abriendo `index.html` con doble clic (`file://`): nada de módulos ES 
+- `index.html` (estructura), `styles.css` (estilos), `app.js` (interfaz y datos).
+- `heat-map.js` y `weekly-goal.js`: lógica pura compartida con los tests.
+- `tests/`: tests de Node (`require('../heat-map.js')`, etc.).
+- Debe funcionar abriendo `index.html` con doble clic (`file://`): nada de módulos ES
 (`type="module"`), `fetch` a archivos locales ni nada que requiera servidor. 
 
 ## Convenciones 
@@ -58,8 +60,8 @@ dejarlo en la memoria.
 - Nunca: añadir dependencias, frameworks o un paso de build. 
 
 ## Verificación 
-- No hay tests automáticos. Después de cada cambio, verifica con el MCP de Chrome 
-DevTools: abre `index.html`, prueba la funcionalidad, revisa la consola y comprueba la 
-vista móvil.
-- Para empezar de cero: DevTools → Application → Local Storage → borrar la clave 
-`diario-estudio-sesiones`.
+- Lógica: `node --test` debe quedar en verde.
+- Interfaz: verificar con el MCP de Chrome DevTools: abre `index.html`, prueba la 
+funcionalidad, revisa la consola y comprueba la vista móvil.
+- Para empezar de cero: DevTools → Application → Local Storage → borrar las claves 
+`diarioEstudio_sesiones` y `diario-estudio-objetivo-semanal`.

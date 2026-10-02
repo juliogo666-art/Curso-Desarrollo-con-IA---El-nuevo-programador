@@ -7,8 +7,8 @@
 | `index.html` | Añadir sección de objetivo semanal (input, botón, barra de progreso) |
 | `styles.css` | Estilos de la sección, barra de progreso y toast |
 | `app.js` | Lógica de guardar objetivo, calcular progreso, actualizar UI |
-| `weekly-goal.js` | Funciones puras: cálculo de minutos de la semana, porcentaje, color |
-| `weekly-goal.test.js` | Tests de las funciones puras |
+| `weekly-goal.js` | Funciones puras: semana, minutos, porcentaje, color, validación, normalización y persistencia |
+| `tests/weekly-goal.test.js` | Tests de las funciones puras |
 
 ## Funciones puras (con "hoy" como parámetro)
 
@@ -18,7 +18,10 @@
 | `getMinutesInWeek(sessions, hoy)` | `sessions: Array, hoy: Date` | `number` | Suma minutos de sesiones en la semana actual |
 | `getProgressPercentage(minutes, goal)` | `minutes: number, goal: number` | `number` | Porcentaje del objetivo (0-100+, sin tope) |
 | `getProgressColor(percentage)` | `percentage: number` | `string` | Color según porcentaje (naranja suave → verde) |
-| `isValidGoal(goal)` | `goal: number` | `boolean` | true si goal > 0 y <= 10000 |
+| `isValidGoal(goal)` | `goal: number` | `boolean` | true si es entero entre 1 y 10000 |
+| `normalizeGoal(valor)` | entrada del usuario | `{ ok, value? }` | redondea con `Math.round` y valida |
+| `parseGoalStored(valor)` | valor leído de localStorage | `number` | 0 si el formato es inválido (RF-6) |
+| `isGoalAchieved(minutos, objetivo)` | números | `boolean` | true si objetivo > 0 y minutos >= objetivo |
 
 ## Algoritmo en pseudocódigo
 
@@ -96,6 +99,9 @@ getProgressColor(percentage):
 | `getProgressPercentage` devuelve 0 si goal es 0 | `getProgressPercentage` | RF-4 |
 | `getProgressColor` devuelve color correcto según porcentaje | `getProgressColor` | RF-7 |
 | `isValidGoal` valida correctamente | `isValidGoal` | RF-1 |
+| `normalizeGoal` redondea y rechaza fuera de rango | `normalizeGoal` | RF-1 |
+| `parseGoalStored` ignora formatos inválidos | `parseGoalStored` | RF-6 |
+| `isGoalAchieved` indica si se cumple el objetivo | `isGoalAchieved` | RF-5, RF-7 |
 
 ## RF cubiertos por cada parte
 
@@ -106,4 +112,9 @@ getProgressColor(percentage):
 | `getProgressPercentage` | RF-4 |
 | `getProgressColor` | RF-7 |
 | `isValidGoal` | RF-1 |
+| `normalizeGoal` | RF-1 |
+| `parseGoalStored` | RF-6 |
+| `isGoalAchieved` | RF-5, RF-7 |
 | HTML/CSS/JS de UI | RF-1, RF-2, RF-4, RF-5, RF-6, RF-7 |
+
+Los requisitos de ARIA del HTML (`label`, `goal-help`, `goal-error` persistente, `aria-live` único en el texto de progreso) siguen pendientes en la interfaz; la lógica pura ya cubre las 8 funciones de la spec.
