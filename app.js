@@ -1,4 +1,5 @@
 const CLAVE_STORAGE = 'diarioEstudio_sesiones';
+const CLAVE_OBJETIVO = 'diario-estudio-objetivo-semanal';
 
 function cargarSesiones() {
   const datos = localStorage.getItem(CLAVE_STORAGE);
@@ -138,8 +139,6 @@ function mostrarHeatMap() {
   const sesiones = cargarSesiones();
   const grid = document.getElementById('heatmapGrid');
   const rangeEl = document.getElementById('heatmapRange');
-  const { buildHeatMap, getWeeksRange, formatDateRange } = require('./heat-map.js');
-
   const today = new Date();
   const days = buildHeatMap(sesiones, today);
   const { start, end } = getWeeksRange(today, 12);
@@ -162,8 +161,70 @@ function mostrarToast(mensaje) {
   setTimeout(() => toast.classList.remove('visible'), 2500);
 }
 
+function cargarObjetivo() {
+  const datos = localStorage.getItem(CLAVE_OBJETIVO);
+  if (!datos) return 0;
+  const objetivo = parseInt(datos, 10);
+  return isNaN(objetivo) ? 0 : objetivo;
+}
+
+function guardarObjetivo(minutos) {
+  localStorage.setItem(CLAVE_OBJETIVO, String(minutos));
+}
+
+function mostrarProgreso() {
+  const sesiones = cargarSesiones();
+  const objetivo = cargarObjetivo();
+  const hoy = new Date();
+
+  const minutosSemana = getMinutesInWeek(sesiones, hoy);
+  const porcentaje = getProgressPercentage(minutosSemana, objetivo);
+  const color = getProgressColor(porcentaje);
+
+  const barra = document.getElementById('progress-bar');
+  const texto = document.getElementById('progress-text');
+  const mensaje = document.getElementById('progress-message');
+
+  barra.style.width = Math.min(porcentaje, 100) + '%';
+  barra.style.backgroundColor = color;
+  texto.textContent = `${minutosSemana} / ${objetivo} min`;
+
+  if (objetivo > 0 && porcentaje >= 100) {
+    mensaje.textContent = '¡Objetivo cumplido! 🎉';
+  } else {
+    mensaje.textContent = '';
+  }
+}
+
 function init() {
   document.getElementById('fecha').value = obtenerFechaHoy();
+
+  const objetivo = cargarObjetivo();
+  if (objetivo > 0) {
+    document.getElementById('goal-input').value = objetivo;
+  }
+
+  document.getElementById('save-goal-btn').addEventListener('click', () => {
+    const input = document.getElementById('goal-input');
+    const valor = parseInt(input.value, 10);
+
+    if (!valor || isNaN(valor)) {
+      mostrarToast('⚠️ Introduce un número válido');
+      return;
+    }
+
+    const redondeado = Math.round(valor);
+
+    if (!isValidGoal(redondeado)) {
+      mostrarToast('⚠️ El objetivo debe ser entre 1 y 10.000 minutos');
+      return;
+    }
+
+    guardarObjetivo(redondeado);
+    input.value = redondeado;
+    mostrarProgreso();
+    mostrarToast('✅ Objetivo guardado');
+  });
 
   document.getElementById('formulario').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -184,12 +245,14 @@ function init() {
     mostrarRacha();
     mostrarSesiones();
     mostrarHeatMap();
+    mostrarProgreso();
     mostrarToast('✅ Sesión guardada');
   });
 
   mostrarRacha();
   mostrarSesiones();
   mostrarHeatMap();
+  mostrarProgreso();
 }
 
 init();

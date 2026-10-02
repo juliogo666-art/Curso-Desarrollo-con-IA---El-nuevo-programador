@@ -16,8 +16,9 @@ programar.
 - Diseño limpio y responsive; cualquier pantalla nueva debe verse bien en el móvil. 
 
 ## Datos 
-- localStorage, clave `diario-estudio-sesiones`: array de `{ date: "AAAA-MM-DD", topic, 
-minutes }`. 
+- localStorage, clave `diarioEstudio_sesiones`: array de `{ fecha: "AAAA-MM-DD", tema, 
+minutos }`. Es la clave que usa el código real: no la cambies sin migrar los datos del 
+usuario. La clave `diario-estudio-objetivo-semanal` es aparte y guarda el objetivo semanal. 
 - Si cambias la forma de los datos, mantén compatibilidad con lo ya guardado o el usuario 
 perderá sus sesiones. 
 

@@ -15,6 +15,20 @@
       <span class="hero-texto">🔥 días de racha</span>
     </section>
 
+    <section class="weekly-goal">
+      <h2>🎯 Objetivo semanal</h2>
+      <div class="goal-input">
+        <input type="number" id="goal-input" placeholder="Ej: 300" min="1">
+        <span>minutos/semana</span>
+        <button id="save-goal-btn">💾 Guardar</button>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p class="progress-text" id="progress-text">0 / 0 min</p>
+      <p class="progress-message" id="progress-message"></p>
+    </section>
+
     <section class="stats">
       <div class="stat">
         <span class="stat-valor" id="mejorRachaNumero">0</span>
@@ -68,6 +82,7 @@
   <div id="toast" class="toast">✅ Sesión guardada</div>
 
   <script src="heat-map.js"></script>
+  <script src="weekly-goal.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
